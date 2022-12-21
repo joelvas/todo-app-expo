@@ -8,14 +8,14 @@ import { CustomThemeProps } from '../../themes/CustomTheme'
 
 interface Props {
   task: Task
-  onClickFinish: (id: number) => void
-  onClickRemove: (id: number) => void
+  onPressFinish: (id: number) => void
+  onPressRemove: (id: number) => void
 }
-const TaskItem = ({ task, onClickFinish, onClickRemove }: Props) => {
+const TaskItem = ({ task, onPressFinish, onPressRemove }: Props) => {
   const theme = useTheme<CustomThemeProps>()
-  const clickFinishHandler = (id: number) => {
+  const pressFinishHandler = (id: number) => {
     if (task.done) return
-    onClickFinish(id)
+    onPressFinish(id)
   }
   return (
     <FlexItem style={styles.container}>
@@ -25,14 +25,15 @@ const TaskItem = ({ task, onClickFinish, onClickRemove }: Props) => {
           buttonColor={theme.colors.success}
           disabled={task.done}
           textColor={'white'}
-          onPress={() => clickFinishHandler(task.id)}
+          onPress={() => pressFinishHandler(task.id)}
         >
           <MaterialCommunityIcons name="check" size={22} />
         </Button>
         <Button
           buttonColor={theme.colors.error}
           textColor={'white'}
-          onPress={() => onClickRemove(task.id)}
+          style={{marginLeft: 5}}
+          onPress={() => onPressRemove(task.id)}
         >
           <MaterialCommunityIcons name="trash-can-outline" size={22} />
         </Button>

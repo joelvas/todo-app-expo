@@ -4,7 +4,9 @@ import {
   getById,
   create,
   remove,
-  finish
+  finish,
+  removeAll,
+  finishAll
 } from '../localstorage/services/Task.service'
 import { Task } from '../models/Task.model'
 
@@ -57,11 +59,24 @@ export const useTaskMutations = () => {
     return res
   }
 
+  const deleteAllTask = async () => {
+    const res = await removeAll()
+    console.log(res)
+    return res
+  }
+
   const finishTask = async (id: number) => {
     const res = await finish(id)
     console.log(res)
     return res
   }
 
-  return { createTask, deleteTask, finishTask }
+  const finishAllTask = async () => {
+    const res = await finishAll()
+    console.log(res)
+    return res
+  }
+
+
+  return { createTask, deleteTask, finishTask, finishAllTask, deleteAllTask }
 }

@@ -1,23 +1,28 @@
 import React from 'react'
-import { FlatList, StyleSheet, ListRenderItemInfo } from 'react-native'
-import { Button, useTheme } from 'react-native-paper'
+import { StyleSheet } from 'react-native'
+import { useTheme } from 'react-native-paper'
 import { useGetTaskList, useTaskMutations } from '../../queries/Task.query'
 import { Task } from '../../models/Task.model'
 import FlexContainer from '../../components/ui/flex/FlexContainer'
 import FlexItem from '../../components/ui/flex/FlexItem'
-import TaskItem from './TaskItem'
+import TaskList from './TaskList'
 import TaskForm from './TaskForm'
 import BasicModal from '../../components/ui/basics/BasicModal'
 import BasicFloatingButton from '../../components/ui/basics/BasicFloattingButton'
 import { FABAction } from '../../components/ui/basics/BasicFloattingButton'
 import { CustomThemeProps } from '../../themes/CustomTheme'
+import TaskFilter from './TaskFilter'
+import useStatusHandler from '../../hooks/useStatusHandler'
 
 const TasksScreen = () => {
   const theme = useTheme<CustomThemeProps>()
   const { data: tasksList, refetch } = useGetTaskList()
   const [openModal, setOpenModal] = React.useState(false)
-  const { createTask, deleteTask, finishTask } = useTaskMutations()
+  const { createTask, deleteTask, finishTask, finishAllTask, deleteAllTask } =
+    useTaskMutations()
 
+  const { statusList, selectStatus, statusSelected } = useStatusHandler()
+  
   const submitFormHandler = async (data: Task) => {
     const res = await createTask(data)
     setOpenModal(false)
@@ -29,13 +34,11 @@ const TasksScreen = () => {
     refetch()
   }
   const pressDeleteAllHandler = async () => {
-    const ids: number[] = tasksList.map((task) => task.id)
-    ids.forEach(async (id) => await deleteTask(id))
+    await deleteAllTask()
     refetch()
   }
   const pressFinishAllHandler = async () => {
-    const ids: number[] = tasksList.map((task) => task.id)
-    ids.forEach(async (id) => await finishTask(id))
+    await finishAllTask()
     refetch()
   }
   const pressFinishHandler = async (id: number) => {
@@ -67,30 +70,21 @@ const TasksScreen = () => {
       }
     ]
   }, []) as FABAction[]
+
   return (
     <FlexContainer style={{ paddingVertical: 5 }}>
       <FlexItem>
-        <Button
-          buttonColor={theme.colors.primary}
-          textColor={theme.colors.inverseOnSurface}
-          onPress={() => setOpenModal(true)}
-          mode="elevated"
-        >
-          New task
-        </Button>
+        <TaskFilter
+          statusList={statusList}
+          onPressStatus={selectStatus}
+        />
       </FlexItem>
       <FlexItem style={styles.listContainer}>
-        <FlatList
-          style={{ paddingVertical: 7 }}
+        <TaskList
           data={tasksList}
-          ItemSeparatorComponent={() => <></>}
-          renderItem={(item: ListRenderItemInfo<Task>) => (
-            <TaskItem
-              task={item.item}
-              onClickFinish={pressFinishHandler}
-              onClickRemove={pressDeleteHandler}
-            />
-          )}
+          statusSelected={statusSelected}
+          onPressFinish={pressFinishHandler}
+          onPressRemove={pressDeleteHandler}
         />
       </FlexItem>
       <BasicModal visible={openModal} onDismiss={() => setOpenModal(false)}>
