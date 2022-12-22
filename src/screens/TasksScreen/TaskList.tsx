@@ -6,28 +6,16 @@ import { TaskStatus } from '../../models/TaskStatus'
 
 interface Props {
   data: Task[]
-  statusSelected: TaskStatus
   onPressRemove: (id: number) => void
   onPressFinish: (id: number) => void
 }
 const TaskList = (props: Props) => {
-  const { data, onPressRemove, onPressFinish, statusSelected } = props
-  const filteredList = React.useMemo(() => {
-    return data.filter((item) => {
-      if (statusSelected.text === 'Completed') {
-        return item.done
-      } else if (statusSelected.text === 'Uncompleted') {
-        return !item.done
-      } else {
-        return true
-      }
-    }) || []
-  }, [statusSelected, data])
+  const { data, onPressRemove, onPressFinish } = props
 
   return (
     <FlatList
       style={{ paddingVertical: 7 }}
-      data={filteredList}
+      data={data}
       ItemSeparatorComponent={() => <></>}
       renderItem={(item: ListRenderItemInfo<Task>) => (
         <TaskItem

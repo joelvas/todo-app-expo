@@ -10,11 +10,14 @@ import {
 } from '../localstorage/services/Task.service'
 import { Task } from '../models/Task.model'
 
-export const useGetTaskList = () => {
+interface GetTaskListParams {
+  status?: string
+}
+export const useGetTaskList = ({ status }: GetTaskListParams) => {
   const [data, setData] = React.useState<Task[]>([])
   const getList = async () => {
     try {
-      const res = await getAll()
+      const res = await getAll({ status })
       if (res) {
         setData(res as Task[])
       }
@@ -24,7 +27,7 @@ export const useGetTaskList = () => {
   }
   React.useEffect(() => {
     getList()
-  }, [])
+  }, [status])
   return { data, refetch: getList }
 }
 
@@ -76,7 +79,6 @@ export const useTaskMutations = () => {
     console.log(res)
     return res
   }
-
 
   return { createTask, deleteTask, finishTask, finishAllTask, deleteAllTask }
 }

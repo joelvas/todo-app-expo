@@ -12,16 +12,16 @@ import BasicFloatingButton from '../../components/ui/basics/BasicFloattingButton
 import { FABAction } from '../../components/ui/basics/BasicFloattingButton'
 import { CustomThemeProps } from '../../themes/CustomTheme'
 import TaskFilter from './TaskFilter'
-import useStatusHandler from '../../hooks/useStatusHandler'
+import useTaskStatusHandler from '../../hooks/useTaskStatusHandler'
 
 const TasksScreen = () => {
   const theme = useTheme<CustomThemeProps>()
-  const { data: tasksList, refetch } = useGetTaskList()
+  const { selectStatus, statusSelected, statusList } = useTaskStatusHandler()
+  const { data: tasksList, refetch } = useGetTaskList({status: statusSelected.text })
   const [openModal, setOpenModal] = React.useState(false)
   const { createTask, deleteTask, finishTask, finishAllTask, deleteAllTask } =
     useTaskMutations()
 
-  const { statusList, selectStatus, statusSelected } = useStatusHandler()
   
   const submitFormHandler = async (data: Task) => {
     const res = await createTask(data)
@@ -82,7 +82,6 @@ const TasksScreen = () => {
       <FlexItem style={styles.listContainer}>
         <TaskList
           data={tasksList}
-          statusSelected={statusSelected}
           onPressFinish={pressFinishHandler}
           onPressRemove={pressDeleteHandler}
         />

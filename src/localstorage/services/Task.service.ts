@@ -9,11 +9,15 @@ import { Task } from '../../models/Task.model'
 import { SQLiteResponse } from '../../models/SQLiteResponse.model'
 
 interface GetTaskListParams {
-  done?: boolean
+  status?: string
 }
-export const getAll = async (): Promise<Task[] | SQLiteResponse> => {
+export const getAll = async ({
+  status
+}: GetTaskListParams): Promise<Task[] | SQLiteResponse> => {
   try {
-    const query = `SELECT * FROM ${TASKS};`
+    let query = `SELECT * FROM ${TASKS};`
+    if (status === 'Completed') query = `SELECT * FROM ${TASKS} WHERE done = 1;`
+    if (status === 'Uncompleted') query = `SELECT * FROM ${TASKS} WHERE done = 0;`
     const res = (await executeQuery<Task[]>(query)) as Task[]
     return res.map((item) => taskResponseToTask(item))
   } catch (e: unknown) {
